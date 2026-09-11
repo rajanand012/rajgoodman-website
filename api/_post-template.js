@@ -67,18 +67,13 @@ function recentCard(p) {
   return `<a class="post" href="/blog/${esc(p.slug)}/">${img}<div class="bd"><h3>${esc(p.title)}</h3>${ex}<span class="go">READ &#8594;</span></div></a>`;
 }
 
-// End-of-post membership promo. Rendered fresh on every request, so the
-// founding-rate copy switches itself to the standard rate after 15 Sept 2026
-// (same cutoff as resources.aifirstmindset.ai/membership) - no redeploy needed.
-const FOUNDING_DEADLINE = Date.parse('2026-09-15T23:59:00+04:00');
+// End-of-post membership promo. One paid plan since 11 Sept 2026 (Sessions,
+// $1,200 a year); the founding-rate Full plan was withdrawn.
 const MEMBERSHIP_URL = 'https://resources.aifirstmindset.ai/membership'
-  + '?utm_source=rajgoodman.com&utm_medium=referral&utm_campaign=membership-founding-2026&utm_content=blog-post';
+  + '?utm_source=rajgoodman.com&utm_medium=referral&utm_campaign=membership-2026&utm_content=blog-post';
 
-export function membershipCta(now = Date.now()) {
-  const founding = now < FOUNDING_DEADLINE;
-  const detail = founding
-    ? 'Join Raj&rsquo;s year-long AI-First Mindset&reg; Membership &middot; founding rate $3,000 <s>$4,800</s> ends 15 Sept'
-    : 'Join Raj&rsquo;s year-long AI-First Mindset&reg; Membership: three sprints, three deployed AI systems';
+export function membershipCta() {
+  const detail = 'Join Raj&rsquo;s year-long AI-First Mindset&reg; Membership: 12 live build sessions, three deployed AI systems, $100 a month';
   return `<section class="wrap" style="max-width:760px;padding-bottom:30px">
     <div class="pcta">
       <div>

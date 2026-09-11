@@ -485,102 +485,9 @@
     });
   }
 
-  /* ---- Membership promo: founding-rate announcement bar + copy switch.
-     The AI-First Mindset Membership founding rate ends 15 Sept 2026 (same
-     cutoff as resources.aifirstmindset.ai/membership). Until then, every
-     page shows a slim dismissible bar above the nav. In-page sections mark
-     founding-only copy with [data-founding-only] / [data-standard-only] /
-     [data-founding-days] and initFoundingCopy() swaps them once the date
-     passes - no manual edit needed on the morning of 16 Sept. */
-  var PROMO_DEADLINE = '2026-09-15T23:59:00+04:00';
-  var PROMO_DISMISS_KEY = 'rg_promo_founding2026_dismissed';
-  var PROMO_URL = 'https://resources.aifirstmindset.ai/membership';
-  var PROMO_UTM = '?utm_source=rajgoodman.com&utm_medium=referral&utm_campaign=membership-founding-2026&utm_content=';
-
-  function promoDaysLeft(now) {
-    return Math.ceil((new Date(PROMO_DEADLINE) - (now || new Date())) / 86400000);
-  }
-
-  function initFoundingCopy(now) {
-    var days = promoDaysLeft(now);
-    var i, els;
-    els = document.querySelectorAll('[data-founding-days]');
-    for (i = 0; i < els.length; i++) els[i].textContent = days > 0 ? days + ' days left' : '';
-    if (days <= 0) {
-      els = document.querySelectorAll('[data-founding-only]');
-      for (i = 0; i < els.length; i++) els[i].style.display = 'none';
-      els = document.querySelectorAll('[data-standard-only]');
-      for (i = 0; i < els.length; i++) els[i].style.display = '';
-    }
-  }
-
-  var PROMO_CSS =
-    '.pbar{position:fixed;top:0;left:0;right:0;z-index:95;background:linear-gradient(90deg,#16566c,#0d3d4e 55%,#0a2f3d);color:#dff3fa;border-bottom:1px solid rgba(72,167,203,.28);transition:transform .3s}' +
-    'html.pbar-hidden .pbar{transform:translateY(-100%)}' +
-    '.pbar-link{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:8px 44px;text-decoration:none;color:inherit;font-size:.82rem;font-weight:600;line-height:1.3}' +
-    '.pbar-link b{font-weight:800;color:var(--yellow,#f3af00)}.pbar-link s{opacity:.5}' +
-    '.pbar-days{font-family:var(--mono,monospace);font-size:.7rem;background:rgba(223,243,250,.12);padding:2px 8px;border-radius:3px;white-space:nowrap}' +
-    '.pbar-cta{background:var(--yellow,#f3af00);color:#140e04;font-weight:700;font-size:.74rem;padding:5px 13px;border-radius:999px;white-space:nowrap}' +
-    '.pbar-x{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;color:#dff3fa;opacity:.55;font-size:1.15rem;cursor:pointer;padding:6px 10px;line-height:1}' +
-    '.pbar-x:hover{opacity:1}' +
-    '.pbar-short{display:none}' +
-    '@media(max-width:640px){.pbar-long,.pbar-days{display:none}.pbar-short{display:inline}.pbar-link{padding:8px 40px 8px 12px;gap:8px}}' +
-    'html.has-pbar body{padding-top:calc(var(--pbar-h,0px) + 16px)}' +
-    'html.has-pbar .nav{top:calc(var(--pbar-h,0px) + 16px)}' +
-    'html.pbar-hidden .nav{top:0}';
-
-  /* Breathing room between the bar and the nav below it; mirrored in
-     initHashScroll's anchor offset and the has-pbar CSS above. */
-  var PROMO_GAP = 16;
-
-  function initPromoBar(now) {
-    if (promoDaysLeft(now) <= 0) return;
-    try { if (localStorage.getItem(PROMO_DISMISS_KEY)) return; } catch (_) {}
-    if (document.querySelector('.pbar')) return;
-
-    var style = document.createElement('style');
-    style.textContent = PROMO_CSS;
-    document.head.appendChild(style);
-
-    var bar = document.createElement('div');
-    bar.className = 'pbar';
-    bar.setAttribute('role', 'region');
-    bar.setAttribute('aria-label', 'Limited-time membership offer');
-    bar.innerHTML =
-      '<a class="pbar-link" href="' + PROMO_URL + PROMO_UTM + 'announcement-bar">' +
-        '<span class="pbar-long">Founding rate ends 15 Sept &middot; AI-First Mindset&reg; Membership <b>$3,000</b> <s>$4,800</s></span>' +
-        '<span class="pbar-short">Membership founding rate ends 15 Sept</span>' +
-        '<span class="pbar-days">' + promoDaysLeft(now) + ' days left</span>' +
-        '<span class="pbar-cta">Join now <span class="ar">→</span></span>' +
-      '</a>' +
-      '<button class="pbar-x" type="button" aria-label="Dismiss this offer">×</button>';
-    document.body.insertBefore(bar, document.body.firstChild);
-    document.documentElement.classList.add('has-pbar');
-
-    function size() {
-      document.documentElement.style.setProperty('--pbar-h', bar.offsetHeight + 'px');
-    }
-    size();
-    window.addEventListener('resize', size);
-
-    /* Slide away once the reader is into the page; back when they return
-       to the top. Keeps the offer visible without eating scroll viewport. */
-    function onScroll() {
-      document.documentElement.classList.toggle('pbar-hidden', window.pageYOffset > 250);
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-
-    bar.querySelector('.pbar-x').addEventListener('click', function () {
-      try { localStorage.setItem(PROMO_DISMISS_KEY, '1'); } catch (_) {}
-      if (bar.parentNode) bar.parentNode.removeChild(bar);
-      document.documentElement.classList.remove('has-pbar');
-      document.documentElement.classList.remove('pbar-hidden');
-      document.documentElement.style.removeProperty('--pbar-h');
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', size);
-    });
-  }
+  /* The founding-rate promo bar and [data-founding-*] copy switch were
+     removed on 11 Sept 2026 when the Full plan was withdrawn. */
+  var PROMO_GAP = 16; // kept: initHashScroll still allows for a top bar if one is ever injected
 
   /* ---- Cross-page anchor fix. The browser's native fragment jump does not
      fire on this site (pre-existing: /#work from blog pages landed at the
@@ -662,8 +569,6 @@
     initFaq();
     initBackToTop();
     initBookSlider();
-    initPromoBar();
-    initFoundingCopy();
     initHashScroll();
   }
   if (typeof document !== 'undefined') {
@@ -672,5 +577,5 @@
   }
   /* Exposed for unit tests under Node (CommonJS); a no-op in the browser,
      where `module` is undefined. */
-  if (typeof module !== 'undefined' && module.exports) module.exports = { initLinkedIn: initLinkedIn, initDownloads: initDownloads, initForms: initForms, initFaq: initFaq, initBackToTop: initBackToTop, initPromoBar: initPromoBar, initFoundingCopy: initFoundingCopy, promoDaysLeft: promoDaysLeft, initHashScroll: initHashScroll };
+  if (typeof module !== 'undefined' && module.exports) module.exports = { initLinkedIn: initLinkedIn, initDownloads: initDownloads, initForms: initForms, initFaq: initFaq, initBackToTop: initBackToTop, initHashScroll: initHashScroll };
 })();
